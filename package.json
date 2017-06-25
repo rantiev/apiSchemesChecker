@@ -1,0 +1,26 @@
+{
+  "name": "api-schemes-checker",
+  "version": "1.0.0",
+  "description": "Example of FE request/response API schemes checks.",
+  "main": "index.js",
+  "dependencies": {
+    "lodash": "^4.17.4"
+  },
+  "devDependencies": {
+    "jest": "20.0.4"
+  },
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:ci": "jest --runInBand"
+  },
+  "author": "Pavel S",
+  "license": "ISC",
+  "jest": {
+    "verbose": true,
+    "collectCoverage": true,
+    "moduleDirectories": [
+      "node_modules"
+    ]
+  }
+}
