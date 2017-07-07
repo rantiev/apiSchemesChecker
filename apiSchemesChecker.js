@@ -1,8 +1,7 @@
 const _ = require('lodash');
-let apiSchemes = require('./apiSchemes.js');
-apiSchemes = apiSchemes.apiSchemes;
-
 const optionalRegexp = /^\[.*]$/;
+
+let apiSchemes = require('./apiSchemes.js').apiSchemes;
 
 const checkRequest = function (requestName, requestFields) {
     if (!_.has(apiSchemes, `${requestName}.request`)) {
@@ -43,16 +42,18 @@ function checkRequestProps (obj1, obj2, path) {
 
             if (isOptional) {
                 type = type.slice(1, -1);
-            } else if (!obj2.hasOwnProperty(p)) {
+            } else if (!obj2 || !obj2.hasOwnProperty(p)) {
                 throw new Error(`There is no required request property: ${pp}${p}`);
             }
 
-            if (!_.isUndefined(obj2[p]) && !_[`is${type}`](obj2[p])) {
+            if (!_.isUndefined(obj2) && !_.isUndefined(obj2[p]) && !_[`is${type}`](obj2[p])) {
                 throw new Error(`There is wrong property request type: ${pp}${p}, ` +
                 `should be ${type} but is ${typeof obj2[p]}`);
             }
 
         } else if (_.isArray(cp)) {
+
+            //TODO: Add ability to test arrays of objects
 
             if (cp.length === 1) {
 
@@ -61,10 +62,12 @@ function checkRequestProps (obj1, obj2, path) {
                     elements: ${pp}${p}`);
                 }
 
-                let type = cp[0].slice(1, -1);
+                let type = cp[0];
                 const isOptional = optionalRegexp.test(cp[0]);
 
-                if (!obj2[p].length && !isOptional) {
+                if (isOptional) {
+                    type = type.slice(1, -1);
+                } else if (!obj2 || !obj2[p].length) {
                     throw new Error(`There is no required request property in: ${pp}${p}`);
                 }
 
@@ -84,14 +87,17 @@ function checkRequestProps (obj1, obj2, path) {
                     elements: ${pp}${p}`);
                 }
 
-                let type = item.slice(1, -1);
+                let type = item;
                 const isOptional = optionalRegexp.test(item);
 
-                if (!isOptional && !obj2[p][i]) {
+                if (isOptional) {
+                    type = type.slice(1, -1);
+                } else if (!obj2 || !obj2[p][i]) {
                     throw new Error(`There is no required request property in: ${pp}${p}`);
                 }
 
-                if (_.isUndefined(obj2[p][i]) && !_[`is${type}`](obj2[p][i])) {
+                if (!_.isUndefined(obj2)
+                    && !_.isUndefined(obj2[p][i]) && !_[`is${type}`](obj2[p][i])) {
                     throw new Error(`There is wrong property request type in: ${pp}${p}, 
                         should be ${type} but ${typeof item}`);
                 }
